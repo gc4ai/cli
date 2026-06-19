@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+
+# logs / caches
+*.log
+.eslintcache
+
+# os / editor
+.DS_Store
+.idea/
+*.swp
