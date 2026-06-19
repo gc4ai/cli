@@ -6,7 +6,7 @@
   "description": "OSS gc4.ai CLI (gc4) — a thin Node wrapper over the generated OSS TS client. Non-stream.",
   "type": "module",
   "bin": {
-    "gc4": "./src/gc4.mjs"
+    "gc4ai": "./src/gc4.mjs"
   },
   "scripts": {
     "smoke": "node --check ./src/gc4.mjs && node ./src/gc4.mjs help"

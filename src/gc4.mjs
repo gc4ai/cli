@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// gc4 — the OSS gc4.ai CLI (Epic 12, Phase B). A thin Node wrapper over the
+// gc4ai — the OSS gc4.ai CLI (Epic 12, Phase B). A thin Node wrapper over the
 // generated OSS TypeScript client (../typescript-sdk/generated). Non-stream
 // (typed SSE is a Speakeasy-tier property; the CLI gains streaming when it
 // migrates onto the premium @gc4ai/sdk — architecture OQ-4 / D10).
@@ -9,18 +9,18 @@
 // no second source of the request logic.
 //
 // Usage:
-//   GC4_API_KEY=<key> gc4 models
-//   GC4_API_KEY=<key> gc4 chat "hello" --model openai/gpt-4o-mini
-//   GC4_API_KEY=<key> gc4 complete "Once upon a time" --model meta/llama-3.3-70b
+//   GC4AI_API_KEY=<key> gc4ai models
+//   GC4AI_API_KEY=<key> gc4ai chat "hello" --model openai/gpt-4o-mini
+//   GC4AI_API_KEY=<key> gc4ai complete "Once upon a time" --model meta/llama-3.3-70b
 //
 // Env:
-//   GC4_API_KEY   required — your gc4.ai API key
-//   GC4_BASE_URL  optional — defaults to https://gc4.ai
+//   GC4AI_API_KEY   required — your gc4.ai API key
+//   GC4AI_BASE_URL  optional — defaults to https://gc4.ai
 //
 // Runtime note: the generated OSS client ships as TypeScript (../typescript-sdk/
 // generated/index.ts). Run this CLI under a TS-aware runtime (`tsx gc4.mjs ...`)
 // or point GC4_CLIENT at a built JS entry. The import is LAZY (loaded only when a
-// command needs the network), so `gc4 help` and the syntax smoke never touch it.
+// command needs the network), so `gc4ai help` and the syntax smoke never touch it.
 
 // gc4-sdks/cli/src/gc4.mjs -> ../../../typescript-sdk/generated/index.ts
 // (cli is under gc4-sdks/, typescript-sdk is its sibling).
@@ -51,23 +51,23 @@ function parseArgs(argv) {
 }
 
 async function client() {
-  const apiKey = process.env.GC4_API_KEY;
+  const apiKey = process.env.GC4AI_API_KEY;
   if (!apiKey) {
-    console.error("gc4: GC4_API_KEY is required");
+    console.error("gc4ai: GC4AI_API_KEY is required");
     process.exit(2);
   }
   const { GC4 } = await loadClient();
-  return new GC4({ apiKey, baseUrl: process.env.GC4_BASE_URL });
+  return new GC4({ apiKey, baseUrl: process.env.GC4AI_BASE_URL });
 }
 
-const HELP = `gc4 — gc4.ai CLI (OSS, non-stream)
+const HELP = `gc4ai — gc4.ai CLI (OSS, non-stream)
 
 Commands:
-  gc4 models                              list available models
-  gc4 chat <prompt> --model <id>          one-shot chat completion
-  gc4 complete <prompt> --model <id>      text completion
+  gc4ai models                              list available models
+  gc4ai chat <prompt> --model <id>          one-shot chat completion
+  gc4ai complete <prompt> --model <id>      text completion
 
-Env: GC4_API_KEY (required), GC4_BASE_URL (default https://gc4.ai)`;
+Env: GC4AI_API_KEY (required), GC4AI_BASE_URL (default https://gc4.ai)`;
 
 async function main() {
   const { positional, flags } = parseArgs(process.argv.slice(2));
@@ -79,7 +79,7 @@ async function main() {
   }
 
   try {
-    const gc4 = await client();
+    const gc4ai = await client();
     switch (cmd) {
       case "models": {
         const res = await gc4.models.list();
@@ -90,7 +90,7 @@ async function main() {
         const prompt = positional[1];
         const model = flags.model;
         if (!prompt || !model) {
-          console.error("gc4 chat <prompt> --model <id>");
+          console.error("gc4ai chat <prompt> --model <id>");
           process.exit(2);
         }
         const res = await gc4.chat.send({
@@ -104,7 +104,7 @@ async function main() {
         const prompt = positional[1];
         const model = flags.model;
         if (!prompt || !model) {
-          console.error("gc4 complete <prompt> --model <id>");
+          console.error("gc4ai complete <prompt> --model <id>");
           process.exit(2);
         }
         const res = await gc4.completions.create({ model, prompt });
@@ -112,17 +112,17 @@ async function main() {
         break;
       }
       default:
-        console.error(`gc4: unknown command '${cmd}'\n\n${HELP}`);
+        console.error(`gc4ai: unknown command '${cmd}'\n\n${HELP}`);
         process.exit(2);
     }
   } catch (e) {
     // Duck-type the typed API error (GC4ApiError) without a static import —
     // the client module is loaded lazily, so we key on its shape.
     if (e && e.name === "GC4ApiError") {
-      console.error(`gc4: API error ${e.status}:`, JSON.stringify(e.body));
+      console.error(`gc4ai: API error ${e.status}:`, JSON.stringify(e.body));
       process.exit(1);
     }
-    console.error("gc4:", e?.message ?? e);
+    console.error("gc4ai:", e?.message ?? e);
     process.exit(1);
   }
 }
